@@ -101,11 +101,11 @@
   # NB: default packages: https://search.nixos.org/options?channel=unstable&show=environment.defaultPackages&from=0&size=50&sort=relevance&type=packages&query=defaultPackages
   environment.systemPackages = with pkgs;
     [
-       vim
+      vim
       #  wget
     ];
 
-environment.variables
+  # environment.variables = [];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -115,8 +115,7 @@ environment.variables
   #   enableSSHSupport = true;
   # };
 
-
-# SSH server
+  # SSH server
   services.openssh = {
     enable = true;
     # forbid SSH root login
