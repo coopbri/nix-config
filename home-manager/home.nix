@@ -35,11 +35,27 @@
 
   # add user config as you see fit
   # programs.neovim.enable = true;
-  # home.packages = with pkgs; [ steam ];
+  home.packages = with pkgs; [ nixfmt ];
 
-  # Enable Home Manager and git
+  # Home Manager
   programs.home-manager.enable = true;
-  programs.git.enable = true;
+
+  # zsh
+  programs.zsh = {
+    enable = true;
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" ];
+      theme = "robbyrussell";
+    };
+  };
+
+  # git
+  programs.git = {
+    enable = true;
+    userName = "Brian Cooper";
+    userEmail = "brian@brian-cooper.com";
+  };
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";

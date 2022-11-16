@@ -79,6 +79,9 @@
     xkbVariant = "";
   };
 
+  # default shell
+  users.defaultUserShell = pkgs.zsh;
+
   users.users = {
     brian = {
       # TODO: You can set an initial password for your user.
@@ -99,11 +102,15 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   # NB: default packages: https://search.nixos.org/options?channel=unstable&show=environment.defaultPackages&from=0&size=50&sort=relevance&type=packages&query=defaultPackages
-  environment.systemPackages = with pkgs;
-    [
-      vim
-      #  wget
-    ];
+  environment.systemPackages = with pkgs; [
+    oh-my-zsh
+    vim
+    zsh
+    #  wget
+  ];
+
+  # inject shells into `/etc/shells`: https://nixos.wiki/wiki/Command_Shell#Changing_default_shell
+  environment.shells = with pkgs; [ zsh ];
 
   # environment.variables = [];
 
