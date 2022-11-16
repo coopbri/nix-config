@@ -121,8 +121,8 @@ environment.variables
     enable = true;
     # forbid SSH root login
     permitRootLogin = "no";
-    # disable password authentication in favor of keys
-    passwordAuthentication = false;
+    # TODO disable password authentication in favor of keys
+    # passwordAuthentication = false;
   };
 
   # Open ports in the firewall.
