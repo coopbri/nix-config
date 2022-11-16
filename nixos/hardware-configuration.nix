@@ -22,6 +22,9 @@
     fsType = "vfat";
   };
 
+  # NB: this was manually added, see https://github.com/NixOS/nixpkgs/issues/177664 for related issue
+  nixpkgs.hostPlatform.system = "x86_64-linux";
+
   swapDevices =
     [{ device = "/dev/disk/by-uuid/b0ca2507-9004-4be6-859e-3c95d3402bca"; }];
 
