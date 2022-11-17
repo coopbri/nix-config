@@ -2,9 +2,6 @@
   description = "Personal Nix(OS) config";
 
   inputs = {
-    # Nixpkgs: https://github.com/nixos/nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
     # Home Manager: https://nixos.wiki/wiki/home_manager
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
