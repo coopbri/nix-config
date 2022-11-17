@@ -1,5 +1,7 @@
 # Home Manager configuration; configure home environment (replaces `~/.config/nixpkgs/home.nix`)
 
+# TODO modularize
+
 { inputs, lib, config, pkgs, ... }: {
   imports = [
     # If you want to use home-manager modules from other flakes (such as nix-colors):
@@ -33,9 +35,8 @@
     homeDirectory = "/home/brian";
   };
 
-  # add user config as you see fit
   # programs.neovim.enable = true;
-  home.packages = with pkgs; [ nixfmt ];
+  home.packages = with pkgs; [ nixfmt docker docker-compose ];
 
   # Home Manager
   programs.home-manager.enable = true;
@@ -43,6 +44,11 @@
   # zsh
   programs.zsh = {
     enable = true;
+    shellAliases = {
+      nup = "sudo nixos-rebuild switch --flake .#snowflake";
+      hmup = "home-manager switch --flake .#brian@snowflake";
+      ngc = "nix-store --gc";
+    };
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" ];
