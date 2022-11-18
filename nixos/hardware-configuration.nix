@@ -22,6 +22,12 @@
     fsType = "vfat";
   };
 
+  # Erigon data
+  fileSystems."/mnt/erigon" = {
+    device = "/dev/disk/by-label/erigon";
+    fsType = "ext4";
+  };
+
   # NB: this was manually added, see https://github.com/NixOS/nixpkgs/issues/177664 for related issue
   nixpkgs.hostPlatform.system = "x86_64-linux";
 
