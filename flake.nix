@@ -9,26 +9,65 @@
     hardware.url = "github:nixos/nixos-hardware";
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs: {
-    # NixOS config
-    nixosConfigurations = {
-      # format: <hostname> = ...
-      # Ethereum node
-      snowflake = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [ ./nixos/configuration.nix ];
-      };
-    };
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+    let
+      inherit (self) outputs;
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "aarch64-linux"
+        "i686-linux"
+        "x86_64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
+    in rec {
+      # Reusable NixOS modules you might want to export
+      # These are usually stuff you would upstream into nixpkgs
+      nixosModules = import ./modules/nixos;
 
-    # Home Manager config
-    homeConfigurations = {
-      "brian@snowflake" = home-manager.lib.homeManagerConfiguration {
-        pkgs =
-          # Home Manager requires 'pkgs' instance
-          nixpkgs.legacyPackages.x86_64-linux;
-        extraSpecialArgs = { inherit inputs; };
-        modules = [ ./home-manager/home.nix ];
+      # Reusable home-manager modules you might want to export
+      # These are usually stuff you would upstream into home-manager
+      homeManagerModules = import ./modules/home-manager;
+
+      # custom packages and modifications, exported as overlays
+      overlays = import ./overlays;
+
+      legacyPackages = forAllSystems (system:
+        import nixpkgs {
+          inherit system;
+          overlays = with overlays; [ additions modifications ];
+          # config.allowUnfree = true;
+        });
+
+      # custom packages (acessible through 'nix build', 'nix shell', etc.)
+      # packages = forAllSystems
+      # (system: import ./pkgs { pkgs = legacyPackages.${system}; });
+
+      # devshell for bootstrapping
+      # acessible through 'nix develop' or 'nix-shell' (legacy)
+      devShells = forAllSystems (system:
+        let pkgs = legacyPackages.${system};
+        in import ./shell.nix { inherit pkgs; });
+
+      # NixOS config
+      nixosConfigurations = {
+        # format: <hostname> = ...
+        # Ethereum node
+        snowflake = nixpkgs.lib.nixosSystem {
+          pkgs = legacyPackages.x86_64-linux;
+          specialArgs = { inherit inputs outputs; };
+          modules = [ ./nixos/configuration.nix ];
+        };
+      };
+
+      # Home Manager config
+      homeConfigurations = {
+        "brian@snowflake" = home-manager.lib.homeManagerConfiguration {
+          pkgs =
+            # Home Manager requires 'pkgs' instance
+            legacyPackages.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [ ./home-manager/home.nix ];
+        };
       };
     };
-  };
 }
