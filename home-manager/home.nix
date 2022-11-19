@@ -65,7 +65,7 @@
       nup = "sudo nixos-rebuild switch --flake ~/nix-config#snowflake";
       hmup = "home-manager switch --flake ~/nix-config#brian@snowflake";
       ngc = "nix-store --gc";
-      nr = "nix-store --verify --check-contents --repair";
+      nr = "sudo nix-store --verify --check-contents --repair";
       k = "kubectl";
     };
     oh-my-zsh = {
