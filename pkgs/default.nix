@@ -5,7 +5,7 @@
 #   example = pkgs.callPackage ./example { };
 # }
 
-{ pkgs ? null, ... }:
-{
+{ pkgs ? null, ... }: {
   # example = pkgs.callPackage ./example { };
+  k3s = pkgs.callPackage ./k3s { };
 }
