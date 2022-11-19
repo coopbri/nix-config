@@ -1,27 +1,26 @@
 { inputs, outputs, lib, config, pkgs, ... }:
 # ? necessary?
 # with builtins;
-# let
-#   k3sPin = import (builtins.fetchTarball {
-#     name = "k3s-1-24";
-#     url =
-#       "https://github.com/nixos/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
-#       sha256="0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7"
-#   }) { };
-# in with lib; {
-# let
-# pkgs = import (builtins.fetchTarball {
-#   # nixpkgsUnstable2022_09_05 = import (builtins.fetchTarball {
-#   url =
-#     "https://github.com/NixOS/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
-#   # sha256 can be calculated with nix-prefetch-url --unpack $URL
-#   sha256 = "0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7";
-# }) { };
+let
+  #   k3sPin = import (builtins.fetchTarball {
+  #     name = "k3s-1-24";
+  #     url =
+  #       "https://github.com/nixos/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
+  #       sha256="0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7"
+  #   }) { };
+  # in with lib; {
+  # let
+  # pkgs = import (builtins.fetchTarball {
+  #   # nixpkgsUnstable2022_09_05 = import (builtins.fetchTarball {
+  #   url =
+  #     "https://github.com/NixOS/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
+  #   # sha256 can be calculated with nix-prefetch-url --unpack $URL
+  #   sha256 = "0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7";
+  # }) { };
 
-# k3sPin = pkgs.k3s;
-# overlayPkgs = with nixpkgs; [ overlays.k3s ];
-# in {
-{
+  # k3sPin = pkgs.k3s;
+  # overlayPkgs = [ outputs.overlays.modifications.k3s ];
+in {
   # You can import other NixOS modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/nixos):
@@ -53,29 +52,6 @@
       #     patches = [ ./change-hello-to-hi.patch ];
       #   });
       # })
-
-      # TODO remove below in favor of import file (above)
-      # (final: prev: {
-      #   # example = prev.example.overrideAttrs (oldAttrs: rec {
-      #   # ...
-      #   # });
-      #   # k3s = prev.k3s.overrideAttrs (oldAttrs: rec {
-      #   k3s = prev.k3s.overrideAttrs (oldAttrs: {
-      #     src = final.fetchFromGitHub {
-      #       owner = "k3s-io";
-      #       repo = "k3s";
-      #       rev = "648004e4faeaf9e8705386342e95ec9bd211c2b8";
-      #       # If you don't know the hash, the first time, set:
-      #       # sha256 = "0000000000000000000000000000000000000000000000000000";
-      #       # then nix will fail the build with such an error message:
-      #       # hash mismatch in fixed-output derivation '/nix/store/m1ga09c0z1a6n7rj8ky3s31dpgalsn0n-source':
-      #       # wanted: sha256:0000000000000000000000000000000000000000000000000000
-      #       # got:    sha256:173gxk0ymiw94glyjzjizp8bv8g72gwkjhacigd1an09jshdrjb4
-      #       sha256 = "0000000000000000000000000000000000000000000000000000";
-      #     };
-      #   });
-      # })
-      # TODO ^^^
     ];
     # Nixpkgs instance
     config = {
