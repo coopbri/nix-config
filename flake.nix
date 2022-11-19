@@ -34,13 +34,14 @@
       legacyPackages = forAllSystems (system:
         import nixpkgs {
           inherit system;
+          # apply overlays
           overlays = with overlays; [ additions modifications ];
           # config.allowUnfree = true;
         });
 
       # custom packages (acessible through 'nix build', 'nix shell', etc.)
-      # packages = forAllSystems
-      # (system: import ./pkgs { pkgs = legacyPackages.${system}; });
+      packages = forAllSystems
+        (system: import ./pkgs { pkgs = legacyPackages.${system}; });
 
       # devshell for bootstrapping
       # acessible through 'nix develop' or 'nix-shell' (legacy)
