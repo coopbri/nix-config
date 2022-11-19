@@ -20,7 +20,9 @@
         # hash mismatch in fixed-output derivation '/nix/store/m1ga09c0z1a6n7rj8ky3s31dpgalsn0n-source':
         # wanted: sha256:0000000000000000000000000000000000000000000000000000
         # got:    sha256:173gxk0ymiw94glyjzjizp8bv8g72gwkjhacigd1an09jshdrjb4
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        # nix-prefetch-url --unpack $URL
+        # sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-IvRnG/23A9ZyIjFpNpRzgtbsMPSytbN5Boo/KExLSyE=";
       };
     });
   };
