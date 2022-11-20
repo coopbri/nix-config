@@ -162,6 +162,22 @@
   #   enableSSHSupport = true;
   # };
 
+  # Fail2ban intrusion mitigation
+  # https://nixos.wiki/wiki/Fail2ban
+  services.fail2ban = {
+    enable = true;
+    # max attempts allowed before banning
+    maxretry = 5;
+    # ignore  IP address ranges
+    ignoreIP = [
+      "127.0.0.0/8"
+      "10.0.0.0/8"
+      "172.16.0.0/12"
+      "192.168.0.0/16"
+      # "8.8.8.8"
+    ];
+  };
+
   # SSH server
   services.openssh = {
     enable = true;
