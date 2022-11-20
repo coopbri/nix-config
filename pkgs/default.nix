@@ -7,5 +7,5 @@
 
 { pkgs ? null, ... }: {
   # example = pkgs.callPackage ./example { };
-  k3s = pkgs.callPackage ./k3s { };
+#  k3s = pkgs.callPackage ./k3s { };
 }

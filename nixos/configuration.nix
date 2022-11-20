@@ -1,27 +1,4 @@
-{ inputs, outputs, lib, config, pkgs, ... }:
-# ? necessary?
-# with builtins;
-let
-  #   k3sPin = import (builtins.fetchTarball {
-  #     name = "k3s-1-24";
-  #     url =
-  #       "https://github.com/nixos/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
-  #       sha256="0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7"
-  #   }) { };
-  # in with lib; {
-  # let
-  # pkgs = import (builtins.fetchTarball {
-  #   # nixpkgsUnstable2022_09_05 = import (builtins.fetchTarball {
-  #   url =
-  #     "https://github.com/NixOS/nixpkgs/archive/ee01de29d2f58d56b1be4ae24c24bd91c5380cea.tar.gz";
-  #   # sha256 can be calculated with nix-prefetch-url --unpack $URL
-  #   sha256 = "0829fqp43cp2ck56jympn5kk8ssjsyy993nsp0fjrnhi265hqps7";
-  # }) { };
-
-  # k3sPin = pkgs.k3s;
-  # overlayPkgs = [ outputs.overlays.modifications.k3s ];
-in {
-  # You can import other NixOS modules here
+{ inputs, outputs, lib, config, pkgs, ... }: {
   imports = [
     # If you want to use modules your own flake exports (from modules/nixos):
     # outputs.nixosModules.example
@@ -36,41 +13,43 @@ in {
     ./hardware-configuration.nix
   ];
 
-  nixpkgs = {
-    # You can add overlays here
-    overlays = [
-      # If you want to use overlays your own flake exports (from overlays dir):
-      # outputs.overlays.modifications
-      # outputs.overlays.additions
+  # nixpkgs = {
+  #   # You can add overlays here
+  #   overlays = [
+  #     # If you want to use overlays your own flake exports (from overlays dir):
+  #     # outputs.overlays.modifications
+  #     # outputs.overlays.additions
 
-      # Or overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
+  #     # Or overlays exported from other flakes:
+  #     # neovim-nightly-overlay.overlays.default
 
-      # Or define it inline, for example:
-      # (final: prev: {
-      #   hi = final.hello.overrideAttrs (oldAttrs: {
-      #     patches = [ ./change-hello-to-hi.patch ];
-      #   });
-      # })
-    ];
-    # Nixpkgs instance
-    config = {
-      # allow unfree software packages
-      allowUnfree = true;
-    };
-  };
+  #     # Or define it inline, for example:
+  #     # (final: prev: {
+  #     #   hi = final.hello.overrideAttrs (oldAttrs: {
+  #     #     patches = [ ./change-hello-to-hi.patch ];
+  #     #   });
+  #     # })
+  #   ];
+  #   # Nixpkgs instance
+  #   config = {
+  #     # allow unfree software packages
+  #     allowUnfree = true;
+  #   };
+  # };
 
   nix = {
-    # This will add each flake input as a registry
+    # add each flake input as a registry
     # To make nix3 commands consistent with your flake
     registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
 
-    # This will additionally add your inputs to the system's legacy channels
-    # Making legacy nix commands consistent as well, awesome!
+    # add inputs to the system's legacy channels
+    # this makes legacy nix commands consistent as well!
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}")
       config.nix.registry;
 
     settings = {
+      # TODO disable dirty git working tree warnings
+      # warn-dirty = false;
       # Enable flakes and new 'nix' command
       experimental-features = "nix-command flakes";
       # Deduplicate and optimize nix store
@@ -124,21 +103,20 @@ in {
       # initialPassword = "correcthorsebatterystaple";
       isNormalUser = true;
       description = "brian";
-      # openssh.authorizedKeys.keys = [
-      # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
-      # ];
+      # authorized SSH public keys
+      openssh.authorizedKeys.keys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBw2Es9HuXqIXsSQpVQ91PsQVxIyJBA1vcH0KF5/opy0xKo/Tlnm30a6q5rgQZ1pjdz5pL0SdzMfLFP+4h/j729j5QXcShdRxeJTvFXTEXvcfGJRwJPbAfchfaoEDiP7RrgskNGtaEbrir1ObUL2PCIMIlu6OHCP7U2lyymwEw+Cajq3SSAmaL73RBphtVf/WVgM6wInQFKaaxZLOCX0w+3hlAW3DFeS4OEvsa0xSlUWAkEm/H1VTPnCmJJkU3yTujFxxFFdem2zAMN8iF8dAPD+UKLxTUUv1ZttEmWH3OLMTIdgtNmsJCXgmviFa1JhM//4BXe693pMHbz6G7bZ+1tjSF43a3p7rB5GKmiAeRRFs/priChC5V9q53bCBJuk9e8k9/08sxoDVUwxCX7QUt4UM3k6xOtsKbwzG9oOaP7CXc39iegCUZHvw7Kwcf5IhlzMK8NFjHDLzCbJZ6AH8kTlJ8um2feaY0bx0m480J6JhSBDAECIPpY3gIFld8xK0= brian"
+      ];
       # ! "docker" is effectively root
       extraGroups = [ "networkmanager" "wheel" "docker" ];
-      # ?
-      # packages = with pkgs; [ vim ];
+      # packages can be specified here, but controlled by Home Manager instead
+      # packages = with pkgs; [  ];
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # packages installed in system profile. To search, run:
+  # $ nix search $PACKAGE_NAME
   # NB: default packages: https://search.nixos.org/options?channel=unstable&show=environment.defaultPackages&from=0&size=50&sort=relevance&type=packages&query=defaultPackages
-  # let
-  #  in {
   environment.systemPackages = with pkgs; [
     # shell
     zsh
@@ -148,16 +126,31 @@ in {
     # TODO neovim
     # Kubernetes
     k3s
+    # Ethereum
+    erigon
     # k3sPin
     #  wget
-    # Required for `k3s`: https://github.com/rancher/k3os/issues/702#issuecomment-849175078
-    # apparmor-parser
   ];
   # ] ++ overlayPkgs;
   # };
 
   # inject shells into `/etc/shells`: https://nixos.wiki/wiki/Command_Shell#Changing_default_shell
   environment.shells = with pkgs; [ zsh ];
+
+  # Erigon service
+  systemd.services.erigon = {
+    description = "Erigon RPC daemon";
+    serviceConfig = {
+      After = "network.target network-online.target";
+      Wants = "network-online.target";
+      ExecStart =
+        "${pkgs.erigon}/bin/erigon --http --ws --datadir=/mnt/erigon/mainnet private.api.addr=localhost:9090 --http.api=eth,erigon,web3,net,debug,trace,txpool";
+      User = "brian";
+      Restart = "always";
+      RestartSec = "5s";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
 
   # environment.variables = [];
 
@@ -174,46 +167,47 @@ in {
     enable = true;
     # forbid SSH root login
     permitRootLogin = "no";
-    # TODO disable password authentication in favor of keys
-    # passwordAuthentication = false;
+    # disable password authentication in favor of keys
+    passwordAuthentication = false;
+    # kbdInteractiveAuthentication = false;
   };
 
+  # K3s
+  # NB: node hostnames must be unique. See https://docs.k3s.io/installation/requirements#prerequisites for solutions
   services.k3s = {
-    enable = true;
-    # NB: node hostnames must be unique. See https://docs.k3s.io/installation/requirements#prerequisites for solutions
+    enable = false;
     role = "server";
     extraFlags = toString [
       # disable Flannel CNI in favor of Cilium
       "--flannel-backend=none"
       # disable default network policy enforcer in favor of Cilium policy enforcer
       "--disable-network-policy"
-      # "--kubelet-arg=v=4" # Optionally add additional args to k3s
+      # disable `kube-proxy` in favor of Cilium
+      # ? unsure if needed
+      "--disable-kube-proxy"
+      # disable metrics server
       # TODO enable metrics-server
       "--disable metrics-server"
+      "--disable traefik"
+      # "--disable local-storage"
+      # "--disable coredns"
+      # use embedded etcd datastore
+      # "--cluster-init"
+      # "--tls-san 10.43.0.1"
     ];
   };
 
   # Open ports in the firewall.
   networking.firewall = {
-    #    enable = true;
     allowedTCPPorts = [
-      # 22 (enabled by default)
       # k3s API server
       6443
     ];
   };
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
-  # system.autoUpgrade.enable = true;
+  system.autoUpgrade.enable = true;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  # `man configuration.nix`; https://nixos.org/nixos/options.html
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "22.05";
 }

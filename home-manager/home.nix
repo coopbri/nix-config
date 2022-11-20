@@ -14,6 +14,9 @@
     # ./nvim.nix
   ];
 
+  # https://github.com/NixOS/nixpkgs/blob/4a9f9e03fcf2ad79c9383845acb9234e1c56b533/pkgs/applications/networking/cluster/k3s/default.nix#L50
+  # pkgs.k3s.override { k3sVersion="1.24.8+k3s1"; }
+
   nixpkgs = {
     overlays = [
       # If you want to use overlays your own flake exports (from overlays dir):
@@ -44,6 +47,7 @@
 
   # programs.neovim.enable = true;
   home.packages = with pkgs; [
+    bat
     htop
     # Nix
     nixfmt
@@ -52,6 +56,7 @@
     docker-compose
     # Kubernetes
     kubectl
+    kubernetes-helm
     cilium-cli
   ];
 
@@ -67,6 +72,7 @@
       ngc = "nix-store --gc";
       nr = "sudo nix-store --verify --check-contents --repair";
       k = "kubectl";
+      cat = "bat";
     };
     oh-my-zsh = {
       enable = true;
