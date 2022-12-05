@@ -49,6 +49,7 @@
   home.packages = with pkgs; [
     bat
     htop
+    neofetch
     # Nix
     nixfmt
     # Docker
