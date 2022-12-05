@@ -104,9 +104,10 @@
       isNormalUser = true;
       description = "brian";
       # authorized SSH public keys
-      openssh.authorizedKeys.keys = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBw2Es9HuXqIXsSQpVQ91PsQVxIyJBA1vcH0KF5/opy0xKo/Tlnm30a6q5rgQZ1pjdz5pL0SdzMfLFP+4h/j729j5QXcShdRxeJTvFXTEXvcfGJRwJPbAfchfaoEDiP7RrgskNGtaEbrir1ObUL2PCIMIlu6OHCP7U2lyymwEw+Cajq3SSAmaL73RBphtVf/WVgM6wInQFKaaxZLOCX0w+3hlAW3DFeS4OEvsa0xSlUWAkEm/H1VTPnCmJJkU3yTujFxxFFdem2zAMN8iF8dAPD+UKLxTUUv1ZttEmWH3OLMTIdgtNmsJCXgmviFa1JhM//4BXe693pMHbz6G7bZ+1tjSF43a3p7rB5GKmiAeRRFs/priChC5V9q53bCBJuk9e8k9/08sxoDVUwxCX7QUt4UM3k6xOtsKbwzG9oOaP7CXc39iegCUZHvw7Kwcf5IhlzMK8NFjHDLzCbJZ6AH8kTlJ8um2feaY0bx0m480J6JhSBDAECIPpY3gIFld8xK0= brian"
-      ];
+      #openssh.authorizedKeys.keys = [
+      # TODO
+      #  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBw2Es9HuXqIXsSQpVQ91PsQVxIyJBA1vcH0KF5/opy0xKo/Tlnm30a6q5rgQZ1pjdz5pL0SdzMfLFP+4h/j729j5QXcShdRxeJTvFXTEXvcfGJRwJPbAfchfaoEDiP7RrgskNGtaEbrir1ObUL2PCIMIlu6OHCP7U2lyymwEw+Cajq3SSAmaL73RBphtVf/WVgM6wInQFKaaxZLOCX0w+3hlAW3DFeS4OEvsa0xSlUWAkEm/H1VTPnCmJJkU3yTujFxxFFdem2zAMN8iF8dAPD+UKLxTUUv1ZttEmWH3OLMTIdgtNmsJCXgmviFa1JhM//4BXe693pMHbz6G7bZ+1tjSF43a3p7rB5GKmiAeRRFs/priChC5V9q53bCBJuk9e8k9/08sxoDVUwxCX7QUt4UM3k6xOtsKbwzG9oOaP7CXc39iegCUZHvw7Kwcf5IhlzMK8NFjHDLzCbJZ6AH8kTlJ8um2feaY0bx0m480J6JhSBDAECIPpY3gIFld8xK0= brian"
+      #];
       # ! "docker" is effectively root
       extraGroups = [ "networkmanager" "wheel" "docker" ];
       # packages can be specified here, but controlled by Home Manager instead
@@ -118,6 +119,12 @@
   # $ nix search $PACKAGE_NAME
   # NB: default packages: https://search.nixos.org/options?channel=unstable&show=environment.defaultPackages&from=0&size=50&sort=relevance&type=packages&query=defaultPackages
   environment.systemPackages = with pkgs; [
+    gnumake
+    lm_sensors
+    # network utilities
+    lsof
+    iperf
+    speedtest-cli
     # shell
     zsh
     oh-my-zsh
@@ -144,7 +151,9 @@
       After = "network.target network-online.target";
       Wants = "network-online.target";
       ExecStart =
-        "${pkgs.erigon}/bin/erigon --http --ws --datadir=/mnt/erigon/mainnet private.api.addr=localhost:9090 --http.api=eth,erigon,web3,net,debug,trace,txpool";
+        # --http (RPC daemon)
+	# --metrics (Grafana + Prometheus)
+        "${pkgs.erigon}/bin/erigon --ws --datadir=/mnt/erigon/mainnet private.api.addr=localhost:9090 --http.api=eth,erigon,web3,net,debug,trace,txpool";
       User = "brian";
       Restart = "always";
       RestartSec = "5s";
@@ -214,8 +223,11 @@
   };
 
   # Open ports in the firewall.
+  # NB: Docker can override firewall rules here (a fix will be implemented upstream in future). Track https://github.com/NixOS/nixpkgs/issues/111852
   networking.firewall = {
     allowedTCPPorts = [
+      # ssh (NB: technically this is enabled by default: https://github.com/NixOS/nixpkgs/issues/19504)
+      22
       # k3s API server
       6443
     ];
